@@ -14,14 +14,17 @@ public class KnapsackPSO {
 	double bestGlobalPerfomance; 
 	ArrayList<Integer> bestGlobalPosition;
 	double globalAttraction;
+	boolean addSupportForInertiaWeight;
 	Random random;
-	public KnapsackPSO(){
-		packages = new ArrayList<Package>();
-		swarm = new ArrayList<Container>();
-		bestGlobalPerfomance = 0.0;
-		bestGlobalPosition = new ArrayList<Integer>();
-		globalAttraction = 1.5;
-		random = new Random();
+	
+	public KnapsackPSO(boolean addSupportForInertiaWeight){
+		this.addSupportForInertiaWeight = addSupportForInertiaWeight;
+		this.packages = new ArrayList<Package>();
+		this.swarm = new ArrayList<Container>();
+		this.bestGlobalPerfomance = 0.0;
+		this.bestGlobalPosition = new ArrayList<Integer>();
+		this.globalAttraction = 1.5;
+		this.random = new Random();
 	}
 	
 	public void run(){
@@ -33,7 +36,7 @@ public class KnapsackPSO {
 				if(container.evaluate() > bestGlobalPerfomance){
 					bestGlobalPerfomance = container.evaluate();
 					bestGlobalPosition = new ArrayList<Integer>(container.getPositionVector()); //Er detta lov? 
-					container.updatePositon(bestGlobalPosition, globalAttraction);
+					container.updatePositon(bestGlobalPosition, globalAttraction, addSupportForInertiaWeight);
 				}
 			}
 			numberOfIterations += 1;
@@ -69,9 +72,9 @@ public class KnapsackPSO {
         }
 	}
 	
-	public void initializeSwarm(){
+	public void initializeSwarm(int numberOfContainers){
 		Random random = new Random();
-		for (int i = 0; i < 4000; i++) {
+		for (int i = 0; i < numberOfContainers; i++) {
 			ArrayList<Package> p = new ArrayList<Package>(packages); //Er detta lov? 
 			
 			for(Package pack : p){

@@ -58,7 +58,7 @@ public class Container {
 	}
 
 	public void updatePositon(ArrayList<Integer> bestGlobalPosition,
-			double globalAttraction) {
+			double globalAttraction, boolean addSupportForInertiaWeight) {
 		double r1 = random.nextDouble();
 		double r2 = random.nextDouble();
 		
@@ -68,9 +68,20 @@ public class Container {
 			
 			double particleSelfMemory = (bestLocalPosition.get(i) - currentPositon) * r1 * this.localAttraction;
 			double globalInfluence = (bestGlobalPosition.get(i) - currentPositon) * r2 * globalAttraction;
-			double intertia = (currentPackage.getProbability() * this.inertiaWeight);
-			
-			currentPackage.setProbability(particleSelfMemory+globalInfluence+intertia);
+			double inertia = 0;
+			if(addSupportForInertiaWeight){
+				if((this.inertiaWeight*0.99) > 0.4){
+					inertia = (currentPackage.getProbability() * (this.inertiaWeight*0.991));
+					this.inertiaWeight *= 0.991;
+				}
+				else{
+					inertia = currentPackage.getProbability()*0.4;
+				}
+			}
+			else {
+				inertia = currentPackage.getProbability();
+			}
+			currentPackage.setProbability(particleSelfMemory+globalInfluence+inertia);
 			
 			//Clamping
 			if(currentPackage.getProbability() > 4.25){
