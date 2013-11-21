@@ -11,6 +11,13 @@ public class Package implements Comparable<Package>{
 		this.position = position;
 		this.probability = probability;
 	}
+	
+	public Package(Package packageToCopy){
+		this.value = packageToCopy.getValue();
+		this.weight = packageToCopy.getWeight();
+		this.position = packageToCopy.getPosition();
+		this.probability = packageToCopy.getProbability();
+	}
 
 	public double getProbability() {
 		return probability;

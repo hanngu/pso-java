@@ -27,7 +27,7 @@ public class KnapsackPSO {
 		this.random = new Random();
 	}
 	
-	public void run(){
+	public double run(){
 		int numberOfIterations = 0;
 		while(numberOfIterations < 500) {
 			for(Container container: swarm) {
@@ -42,7 +42,8 @@ public class KnapsackPSO {
 			numberOfIterations += 1;
 			System.out.println("Best global performance: " + this.bestGlobalPerfomance);
 		}
-		System.out.println("Best global position: " + this.bestGlobalPosition);
+		//System.out.println("Best global position: " + this.bestGlobalPosition);
+		return this.bestGlobalPerfomance;
 	}
 	
 	public void createPackages(String path){
@@ -75,8 +76,10 @@ public class KnapsackPSO {
 	public void initializeSwarm(int numberOfContainers){
 		Random random = new Random();
 		for (int i = 0; i < numberOfContainers; i++) {
-			ArrayList<Package> p = new ArrayList<Package>(packages); //Er detta lov? 
-			
+			ArrayList<Package> p = new ArrayList<Package>();
+			for(Package packageToCopy: this.packages){
+				p.add(new Package(packageToCopy));
+			}
 			for(Package pack : p){
 				double r = (random.nextDouble() * 8.5) - 4.25; 
 				pack.setProbability(r);
