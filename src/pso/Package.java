@@ -3,6 +3,7 @@ package pso;
 public class Package implements Comparable<Package>{
 	
 	double value, weight, probability;
+	double volume = 0;
 	int position;
 	
 	public Package(double value, double weight, int position, double probability){
@@ -12,16 +13,30 @@ public class Package implements Comparable<Package>{
 		this.probability = probability;
 	}
 	
+	public Package(double value, double weight, int position, double probability, double volume){
+		this.value = value;
+		this.weight = weight;
+		this.position = position;
+		this.probability = probability;
+		this.volume = volume;
+	}
+	
 	public Package(Package packageToCopy){
 		this.value = packageToCopy.getValue();
 		this.weight = packageToCopy.getWeight();
 		this.position = packageToCopy.getPosition();
 		this.probability = packageToCopy.getProbability();
+		this.volume = packageToCopy.getVolume();
 	}
 
 	public double getProbability() {
 		return probability;
 	}
+
+	public double getVolume() {
+		return volume;
+	}
+
 
 	public void setProbability(double probability) {
 		this.probability = probability;
@@ -43,7 +58,6 @@ public class Package implements Comparable<Package>{
 		return weight;
 	}
 
-	//Kanskje buggy?
 	public int compareTo(Package packageToCompare) {
 		if(this.getValue() < packageToCompare.getValue()){
 			return 1;

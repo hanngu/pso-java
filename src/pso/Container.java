@@ -6,18 +6,23 @@ import java.util.Random;
 public class Container {
 	
 	ArrayList<Package> packages;
-	ArrayList<Integer> bestLocalPosition;
-	double bestLocalPerformance, localAttraction, inertiaWeight;
-	Random random; 
+	ArrayList<Integer> bestLocalPosition = new ArrayList<Integer>();
+	double bestLocalPerformance = 0.0;
+	double localAttraction = 0.2;
+	double inertiaWeight = 1.0;
+	Random random = new Random(); 
+	
 	public Container(ArrayList<Package> packages){
 		this.packages = packages;
-		bestLocalPosition = new ArrayList<Integer>();
-		bestLocalPerformance = 0.0;
-		localAttraction = 0.2;
-		inertiaWeight = 1.0;
-		random = new Random();
 	}
-
+	
+	public Container (Container copy) {
+		this.packages = new ArrayList<Package>();
+		for (Package p: copy.getPackages()) {
+			this.packages.add(new Package(p));
+		}
+	}
+ 
 	public ArrayList<Package> getPackages() {
 		return this.packages;
 	}
@@ -39,7 +44,7 @@ public class Container {
 		return evaluation;
 	}
 	
-	public double getTotaltWeight(){
+	public double getTotalWeight(){
 		double totalWeight = 0.0;
 		for(Package p : this.packages){
 			if(p.getPosition() == 1){
@@ -47,6 +52,26 @@ public class Container {
 			}
 		}
 		return totalWeight;
+	}
+	
+	public double getTotalVolume() {
+		double volume = 0;
+		for (Package p : this.packages) {
+			if (p.getPosition() == 1) {
+				volume += p.getVolume();
+			}
+		}
+		return volume;
+	}
+	
+	public int getPackagesInContainer() {
+		int numberOfPackages = 0;
+		for (Package p : this.packages) {
+			if (p.getPosition() == 1 ) {
+				numberOfPackages++;
+			}
+		}
+		return numberOfPackages;
 	}
 
 	public ArrayList<Integer> getPositionVector() {
