@@ -1,6 +1,8 @@
 package pso;
 
 
+import com.google.gson.Gson;
+
 public class PSO {
 	
 	public static void main(String[] args) {
@@ -11,6 +13,9 @@ public class PSO {
 		KnapsackPSO knapsack = new KnapsackPSO(true);
 		knapsack.createPackages("packages.txt");
 		knapsack.initializeSwarm(200);
-		System.out.println(knapsack.run());
+
+        Gson gson = new Gson();
+        String json = gson.toJson(knapsack.run());
+        System.out.println(json);
 	}
 }

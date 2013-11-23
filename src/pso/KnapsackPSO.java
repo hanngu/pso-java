@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Random;
 
 public class KnapsackPSO {
@@ -17,7 +18,7 @@ public class KnapsackPSO {
 	boolean addSupportForInertiaWeight;
 	Random random;
 	Container winningContainer;
-	ArrayList<Double> chartDataContainer = new ArrayList<Double>();
+	ArrayList<HashMap<String, Double>> chartDataContainer = new ArrayList<HashMap<String, Double>>();
 	
 	public KnapsackPSO(boolean addSupportForInertiaWeight){
 		this.addSupportForInertiaWeight = addSupportForInertiaWeight;
@@ -29,9 +30,9 @@ public class KnapsackPSO {
 		this.random = new Random();
 	}
 	
-	public ArrayList<Double> run(){
+	public ArrayList<HashMap<String, Double>> run(){
 		int numberOfIterations = 0;
-		while(numberOfIterations < 300) {
+        while(numberOfIterations < 300) {
 			for(Container container: swarm) {
 				knapsack(container.getPackages());
 				container.compareLocalPerfomance();
@@ -47,12 +48,16 @@ public class KnapsackPSO {
 				print();
 			}
 			numberOfIterations += 1;
-			chartDataContainer.add(bestGlobalPerfomance);
-		}
-		System.out.println("Solution found with " + numberOfIterations + " iterations.");
-		print();
-		return chartDataContainer;
-		}
+            HashMap<String, Double> bestGlobalPerformanceDataPoint = new HashMap<String, Double>();
+            bestGlobalPerformanceDataPoint.put("x", (double) numberOfIterations);
+            bestGlobalPerformanceDataPoint.put("y", bestGlobalPerfomance);
+
+			chartDataContainer.add(bestGlobalPerformanceDataPoint);
+        }
+        System.out.println("Solution found with " + numberOfIterations + " iterations.");
+//	    print();
+	    return chartDataContainer;
+    }
 	
 	public void createPackages(String path){
         BufferedReader br = null;
@@ -146,10 +151,10 @@ public class KnapsackPSO {
 				
 		
 		String output = "Winning container specs:\n";
-		output += "Weight: "+ weight + "\n";
-		output += "Volume: " + volume + "\n";
-		output += "Performance: " + winningContainer.evaluate();
-		output += "Number of packages: " + winningContainer.getPackagesInContainer();
+		output += "Weight: "+ weight;
+		output += "\nVolume: " + volume;
+		output += "\nPerformance: " + winningContainer.evaluate();
+		output += "\nNumber of packages: " + winningContainer.getPackagesInContainer();
 		System.out.println(output);
 	}
 }
