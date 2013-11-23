@@ -1,48 +1,40 @@
 package pso;
 
-import java.util.ArrayList; 
+import java.util.ArrayList;
 
-public class BasicPSO {
+public class NeighbourAwarePso extends BasicPSO {
 	
-	int dimensions, numberOfParticles;
-	double bestGlobalPerfomance, globalAttraction;
-	ArrayList<Double> bestGlobalPosition;
-	ArrayList<Particle> swarm;
-//	Particle bestParticle;
+	ArrayList<NeighbourAwareParticle> neighbourAwareSwarm;
 	
-	public BasicPSO(int dimensions, int numberOfParticles){
-		this.dimensions = dimensions;
-		this.numberOfParticles = numberOfParticles;
-		this.globalAttraction = 1.5;
-		this.bestGlobalPerfomance = Double.MAX_VALUE;
-		this.bestGlobalPosition = new ArrayList<Double>();
-		this.swarm = new ArrayList<Particle>();
-//		this.bestParticle = null;
+	public NeighbourAwarePso(int dimensions, int numberOfParticles) {
+		super(dimensions, numberOfParticles);
+		neighbourAwareSwarm = new ArrayList<NeighbourAwareParticle>();
+		
 	}
 	
-
 	public ArrayList<Double> run(){
 		initializeSwarm();
 		int numberOfIterations = 0;
 		while(bestGlobalPerfomance > 0.001 && numberOfIterations < 1000){
-			for(Particle particle: this.swarm){
+			for(NeighbourAwareParticle particle: this.neighbourAwareSwarm){
 				particle.compareLocalPerformance();
+				particle.compareWithNeighbours(this.neighbourAwareSwarm);
 				if(particle.evaluate() < this.bestGlobalPerfomance){
 					bestGlobalPerfomance = particle.evaluate();
 					bestGlobalPosition = particle.getCopiedPositon();
 					//bestParticle = new Particle(particle);
 				}
-				particle.changeVelocity(globalAttraction, bestGlobalPosition);
+				particle.changeVelocity(globalAttraction);
 				particle.updatePosition();
 			}
+			System.out.println("Best global performance so far: " + bestGlobalPerfomance);
 			numberOfIterations ++;
 		}
-
 		System.out.println("Number of iterations: " + numberOfIterations);
 		System.out.println("Best global performance: " + bestGlobalPerfomance);
 		return bestGlobalPosition;
 	}
-
+	
 	protected void initializeSwarm() {
 		ArrayList<Double> particlePosition;
 		for (int i = 0; i < this.numberOfParticles; i++) {
@@ -50,17 +42,9 @@ public class BasicPSO {
 			 for (int j = 0; j < this.dimensions; j++) {
 				 particlePosition.add((0 + (Math.random() * ((200 - 0) + 1))) - 100);
 			 }
-			 this.swarm.add(new Particle(particlePosition));
+			 this.neighbourAwareSwarm.add(new NeighbourAwareParticle(particlePosition));
 		}
 		
-	}
-	public String toString(){
-		String out = "[ ";
-		for(Particle p : this.swarm){
-			out = p.toString();
-		}
-		out += " ]";
-		return out;
 	}
 
 }

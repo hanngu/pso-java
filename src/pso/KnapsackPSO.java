@@ -17,6 +17,7 @@ public class KnapsackPSO {
 	boolean addSupportForInertiaWeight;
 	Random random;
 	Container winningContainer;
+	ArrayList<Double> chartDataContainer = new ArrayList<Double>();
 	
 	public KnapsackPSO(boolean addSupportForInertiaWeight){
 		this.addSupportForInertiaWeight = addSupportForInertiaWeight;
@@ -28,11 +29,10 @@ public class KnapsackPSO {
 		this.random = new Random();
 	}
 	
-	public double run(){
+	public ArrayList<Double> run(){
 		int numberOfIterations = 0;
-		while(numberOfIterations < 500) {
+		while(numberOfIterations < 300) {
 			for(Container container: swarm) {
-				knapsackConatiner(container.getPackages());
 				knapsack(container.getPackages());
 				container.compareLocalPerfomance();
 				if(container.evaluate() > bestGlobalPerfomance){
@@ -47,13 +47,12 @@ public class KnapsackPSO {
 				print();
 			}
 			numberOfIterations += 1;
-			System.out.println("Best global performance: " + this.bestGlobalPerfomance);
+			chartDataContainer.add(bestGlobalPerfomance);
 		}
-		//System.out.println("Best global position: " + this.bestGlobalPosition);
 		System.out.println("Solution found with " + numberOfIterations + " iterations.");
 		print();
-		return this.bestGlobalPerfomance;
-	}
+		return chartDataContainer;
+		}
 	
 	public void createPackages(String path){
         BufferedReader br = null;

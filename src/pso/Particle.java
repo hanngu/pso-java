@@ -7,15 +7,22 @@ public class Particle {
 	double bestLocalPerfomance, localAttraction;
 	ArrayList<Double> currentPosition, bestLocalPosition, velocity;
 	Random random = new Random();
-	boolean firstRound;
 	
 	public Particle(ArrayList<Double> position){
 		this.currentPosition = position;
 		this.bestLocalPosition = getCopiedPositon();
 		this.bestLocalPerfomance = Double.MAX_VALUE;
 		this.localAttraction = 0.2;
-		this.velocity = new ArrayList<Double>();
-		this.firstRound = true;
+		this.velocity = getInitialVelocity();
+	}
+
+	private ArrayList<Double> getInitialVelocity() {
+		ArrayList<Double> intialVelocity = new ArrayList<Double>();
+		for (int i = 0; i < currentPosition.size(); i++) {
+			intialVelocity.add(0.0);
+		}
+		return intialVelocity;
+		
 	}
 
 	public Particle(Particle particleToCopy) {
@@ -24,7 +31,6 @@ public class Particle {
 		this.bestLocalPerfomance = particleToCopy.bestLocalPerfomance;
 		this.localAttraction = particleToCopy.localAttraction;
 		this.velocity = particleToCopy.getCopiedVelocity();
-		this.firstRound = particleToCopy.getIfFirstRound();
 	}
 
 	public void compareLocalPerformance() {
@@ -35,10 +41,6 @@ public class Particle {
 		
 	}
 	
-	public boolean getIfFirstRound(){
-		return this.firstRound;
-	}
-
 	public ArrayList<Double> getCurrentPosition(){
 		return this.currentPosition;
 	}
@@ -82,12 +84,7 @@ public class Particle {
 		for (int i = 0; i < currentPosition.size(); i++) {
 			double particleSelfMemory = (bestLocalPosition.get(i) - currentPosition.get(i)) * r1 * this.localAttraction;
 			double globalInfluence = (bestGlobalPosition.get(i) - currentPosition.get(i)) * r2 * globalAttraction;
-			double inertia = 0;
-			if(firstRound){
-				inertia = 0;
-			} else{
-				inertia = velocity.get(i);
-			}
+			double inertia = velocity.get(i);
 			double newVelocity = inertia + particleSelfMemory + globalInfluence;
 			
 			//Clamping
@@ -97,13 +94,10 @@ public class Particle {
 			if(newVelocity < -1.0){
 				newVelocity = -1.0;
 			}
-			if(!firstRound){
-				this.velocity.remove(i);
-			}
+			this.velocity.remove(i);
 			this.velocity.add(i, newVelocity);
 			
 		}
-		firstRound = false;
 		
 	}
 
