@@ -12,7 +12,7 @@ public class PSO {
 
 		KnapsackPSO knapsack = new KnapsackPSO(true);
 		knapsack.createPackages("packages.txt");
-		knapsack.initializeSwarm(200);
+		knapsack.initializeSwarm(4000);
 
         Gson gson = new Gson();
         String json = gson.toJson(knapsack.run());

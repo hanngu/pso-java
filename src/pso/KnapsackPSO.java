@@ -32,7 +32,7 @@ public class KnapsackPSO {
 	
 	public ArrayList<HashMap<String, Double>> run(){
 		int numberOfIterations = 0;
-        while(numberOfIterations < 300) {
+        while(numberOfIterations < 500) {
 			for(Container container: swarm) {
 				knapsack(container.getPackages());
 				container.compareLocalPerfomance();
@@ -55,7 +55,6 @@ public class KnapsackPSO {
 			chartDataContainer.add(bestGlobalPerformanceDataPoint);
         }
         System.out.println("Solution found with " + numberOfIterations + " iterations.");
-//	    print();
 	    return chartDataContainer;
     }
 	
