@@ -54,12 +54,13 @@ public class Container {
                                double globalAttraction, boolean inertiaWeightEnabled) {
 		double r1 = random.nextDouble();
 		double r2 = random.nextDouble();
-        double localAttraction = 1.5;
+        double localAttraction = 0.2;
 
-        double inertiaFactor = 0.85;
+        double inertiaFactor = 0.9991;
 		if(inertiaWeight * inertiaFactor > 0.4 && inertiaWeightEnabled){
 			inertiaWeight *= inertiaFactor;
-		} else if (inertiaWeight * inertiaFactor < 0.4 && inertiaWeightEnabled){
+		}
+        if (inertiaWeight * inertiaFactor < 0.4 && inertiaWeightEnabled){
 			inertiaWeight = 0.4;
 		}
 		for (int i = 0; i < this.packages.size(); i++) {

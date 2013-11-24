@@ -25,7 +25,7 @@ public class KnapsackPSO {
 		this.swarm = new ArrayList<Container>();
 		this.bestGlobalPerformance = 0.0;
 		this.bestGlobalPosition = new ArrayList<Integer>();
-		this.globalAttraction = 0.2;
+		this.globalAttraction = 1.5;
 		this.randomGenerator = new Random();
 	}
 	

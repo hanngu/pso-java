@@ -34,6 +34,5 @@ public class PSO {
 
         Gson gson = new Gson();
         String json = gson.toJson(knapsack.run());
-        System.out.println(json);
-	}
+    }
 }
