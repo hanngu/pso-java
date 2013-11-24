@@ -8,7 +8,7 @@ public class Container {
 	ArrayList<Package> packages;
 	ArrayList<Integer> bestLocalPosition = new ArrayList<Integer>();
 	double bestLocalPerformance = 0.0;
-	double localAttraction = 0.2;
+	double localAttraction = 1.5;
 	double inertiaWeight = 1.0;
 	Random random = new Random(); 
 	
@@ -86,26 +86,24 @@ public class Container {
 			double globalAttraction, boolean addSupportForInertiaWeight) {
 		double r1 = random.nextDouble();
 		double r2 = random.nextDouble();
+		double inertia = 0;
 		
+		if(addSupportForInertiaWeight){
+			if((this.inertiaWeight*0.7) > 0.4){
+				this.inertiaWeight *= 0.7;
+			} else{
+				inertia = 0.4;
+			}
+		} else {
+			inertia = 1.0;
+		}
 		for (int i = 0; i < this.packages.size(); i++) {
 			Package currentPackage = this.packages.get(i);
 			int currentPositon = packages.get(i).getPosition();
 			
 			double particleSelfMemory = (bestLocalPosition.get(i) - currentPositon) * r1 * this.localAttraction;
 			double globalInfluence = (bestGlobalPosition.get(i) - currentPositon) * r2 * globalAttraction;
-			double inertia = 0;
-			if(addSupportForInertiaWeight){
-				if((this.inertiaWeight*0.99) > 0.4){
-					inertia = (currentPackage.getProbability() * (this.inertiaWeight*0.991));
-					this.inertiaWeight *= 0.991;
-				}
-				else{
-					inertia = currentPackage.getProbability()*0.4;
-				}
-			}
-			else {
-				inertia = currentPackage.getProbability();
-			}
+			inertia *= this.packages.get(i).getProbability(); 
 			currentPackage.setProbability(particleSelfMemory+globalInfluence+inertia);
 			
 			//Clamping

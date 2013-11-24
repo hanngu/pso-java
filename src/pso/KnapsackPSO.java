@@ -26,7 +26,7 @@ public class KnapsackPSO {
 		this.swarm = new ArrayList<Container>();
 		this.bestGlobalPerfomance = 0.0;
 		this.bestGlobalPosition = new ArrayList<Integer>();
-		this.globalAttraction = 1.5;
+		this.globalAttraction = 0.2;
 		this.random = new Random();
 	}
 	
@@ -43,10 +43,10 @@ public class KnapsackPSO {
 				}
 				container.updatePositon(bestGlobalPosition, globalAttraction, addSupportForInertiaWeight);
 			}
-			if (numberOfIterations % 50 == 0) {
-				System.out.println("Iteration number " + numberOfIterations);
-				print();
-			}
+//			if (numberOfIterations % 50 == 0) {
+//				System.out.println("Iteration number " + numberOfIterations);
+//				print();
+//			}
 			numberOfIterations += 1;
             HashMap<String, Double> bestGlobalPerformanceDataPoint = new HashMap<String, Double>();
             bestGlobalPerformanceDataPoint.put("x", (double) numberOfIterations);
@@ -54,7 +54,7 @@ public class KnapsackPSO {
 
 			chartDataContainer.add(bestGlobalPerformanceDataPoint);
         }
-        System.out.println("Solution found with " + numberOfIterations + " iterations.");
+//        System.out.println("Solution found with " + numberOfIterations + " iterations.");
 	    return chartDataContainer;
     }
 	
