@@ -36,7 +36,7 @@ public class KnapsackPSO {
 
                 double evaluation = container.evaluate();
 
-                if (evaluation > container.bestLocalPerformance) {
+                if (evaluation > container.getBestLocalPerformance()) {
                     container.setBestLocalPerformance(evaluation);
                     container.setBestLocalPosition(container.getPositionVector());
                 }
@@ -50,6 +50,10 @@ public class KnapsackPSO {
             changeProbabilities();
             knapsackSwarm();
 
+            if (numberOfIterations % 10 == 0) {
+                System.out.println("Best performance at iteration " + numberOfIterations + " is : " + bestGlobalPerformance);
+            }
+
             numberOfIterations += 1;
             HashMap<String, Double> bestGlobalPerformanceDataPoint = new HashMap<String, Double>();
             bestGlobalPerformanceDataPoint.put("x", (double) numberOfIterations);
@@ -57,7 +61,8 @@ public class KnapsackPSO {
 
 			chartDataContainer.add(bestGlobalPerformanceDataPoint);
         }
-        System.out.println("Solution found with " + numberOfIterations + " iterations.");
+        System.out.println();
+        System.out.println("Solution found with performance " + bestGlobalPerformance);
 	    return chartDataContainer;
     }
 
