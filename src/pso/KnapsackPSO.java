@@ -10,55 +10,63 @@ import java.util.HashMap;
 import java.util.Random;
 
 public class KnapsackPSO {
-	ArrayList<Package> packages;
-	ArrayList<Container> swarm;
-	double bestGlobalPerfomance; 
-	ArrayList<Integer> bestGlobalPosition;
-	double globalAttraction;
-	boolean addSupportForInertiaWeight;
-	Random random;
-	Container winningContainer;
-	ArrayList<HashMap<String, Double>> chartDataContainer = new ArrayList<HashMap<String, Double>>();
+	private ArrayList<Package> packages;
+	private ArrayList<Container> swarm;
+	private double bestGlobalPerformance;
+	private ArrayList<Integer> bestGlobalPosition;
+	private double globalAttraction;
+	private boolean inertiaWeightEnabled;
+	private Random randomGenerator;
+	private ArrayList<HashMap<String, Double>> chartDataContainer = new ArrayList<HashMap<String, Double>>();
 	
-	public KnapsackPSO(boolean addSupportForInertiaWeight){
-		this.addSupportForInertiaWeight = addSupportForInertiaWeight;
+	public KnapsackPSO(boolean inertiaWeightEnabled){
+		this.inertiaWeightEnabled = inertiaWeightEnabled;
 		this.packages = new ArrayList<Package>();
 		this.swarm = new ArrayList<Container>();
-		this.bestGlobalPerfomance = 0.0;
+		this.bestGlobalPerformance = 0.0;
 		this.bestGlobalPosition = new ArrayList<Integer>();
 		this.globalAttraction = 0.2;
-		this.random = new Random();
+		this.randomGenerator = new Random();
 	}
 	
 	public ArrayList<HashMap<String, Double>> run(){
 		int numberOfIterations = 0;
         while(numberOfIterations < 500) {
 			for(Container container: swarm) {
-				knapsack(container.getPackages());
-				container.compareLocalPerfomance();
-				if(container.evaluate() > bestGlobalPerfomance){
-					bestGlobalPerfomance = container.evaluate();
+
+                double evaluation = container.evaluate();
+
+                if (evaluation > container.bestLocalPerformance) {
+                    container.setBestLocalPerformance(evaluation);
+                    container.setBestLocalPosition(container.getPositionVector());
+                }
+
+				if(evaluation > bestGlobalPerformance){
+					bestGlobalPerformance = container.evaluate();
 					bestGlobalPosition = new ArrayList<Integer>(container.getPositionVector());
-					winningContainer = new Container(container);
 				}
-				container.updatePositon(bestGlobalPosition, globalAttraction, addSupportForInertiaWeight);
+
 			}
-//			if (numberOfIterations % 50 == 0) {
-//				System.out.println("Iteration number " + numberOfIterations);
-//				print();
-//			}
-			numberOfIterations += 1;
+            changeProbabilities();
+            knapsackSwarm();
+
+            numberOfIterations += 1;
             HashMap<String, Double> bestGlobalPerformanceDataPoint = new HashMap<String, Double>();
             bestGlobalPerformanceDataPoint.put("x", (double) numberOfIterations);
-            bestGlobalPerformanceDataPoint.put("y", bestGlobalPerfomance);
+            bestGlobalPerformanceDataPoint.put("y", bestGlobalPerformance);
 
 			chartDataContainer.add(bestGlobalPerformanceDataPoint);
         }
-//        System.out.println("Solution found with " + numberOfIterations + " iterations.");
+        System.out.println("Solution found with " + numberOfIterations + " iterations.");
 	    return chartDataContainer;
     }
-	
-	public void createPackages(String path){
+
+    private void changeProbabilities() {
+        for (Container c : swarm) {
+            c.updatePosition(bestGlobalPosition, globalAttraction, inertiaWeightEnabled);
+        }
+    }
+	public void createPackages(String path, boolean volumeIsSignificant) {
         BufferedReader br = null;
         try {
             br = new BufferedReader(new FileReader(path));
@@ -67,7 +75,9 @@ public class KnapsackPSO {
             	String[] s = line.split(",");
             	double value = Double.parseDouble(s[0]);
             	double weight = Double.parseDouble(s[1]);
-            	packages.add(new Package(value, weight, 0, -1));
+                double volume = volumeIsSignificant ? 1 + (Math.random() * ((100 - 1) + 1)) : 0;
+
+                packages.add(new Package(value, weight, 0, -1, volume));
             	line = br.readLine();
             }
         }catch (FileNotFoundException e) {
@@ -99,40 +109,49 @@ public class KnapsackPSO {
 			}
 			
 			for (int j = 0; j < (packages.size()/4); j++) {
-				int randomPacakage = random.nextInt(2001);
-				Package randomSelectedPackage = packages.get(randomPacakage);
+				int randomPackage = random.nextInt(2001);
+				Package randomSelectedPackage = packages.get(randomPackage);
 				randomSelectedPackage.setPosition(1);
 			}
 			this.swarm.add(new Container(p));
 		}
+        knapsackSwarm();
 	}
 	
-	protected void knapsack(ArrayList<Package> containerPackages) {
-		boolean stillFreeSpace = true;
-		double remainingSpace = 1000.0;
-		ArrayList<Package> possiblePackages = new ArrayList<Package>();
-		for(Package p: containerPackages){
-			double sigmoid = 1/(1 + Math.exp(-p.getProbability()));
-			if (sigmoid > random.nextDouble()){
-				p.setPosition(1);
-				possiblePackages.add(p);
-			} else{
-				p.setPosition(0);
-			}
-		}
-		Collections.sort(possiblePackages);
-		while(stillFreeSpace){
-			Package packageToPutInContainer = possiblePackages.get(0);
-			if((remainingSpace - packageToPutInContainer.getWeight()) >= 0){
-				remainingSpace -= packageToPutInContainer.getWeight();
-				possiblePackages.remove(0);
-			} else {
-				stillFreeSpace = false;
-			}
-		}
-		for(Package p : possiblePackages){
-			p.setPosition(0);
-		}
+	protected void knapsackSwarm() {
+        for (Container container : swarm) {
+            ArrayList<Package> packages = container.getPackages();
+
+            boolean capacityReached = true;
+            double weightRemaining = 1000.0;
+            double volumeRemaining = 1000.0;
+            ArrayList<Package> possiblePackages = new ArrayList<Package>();
+            for(Package p: packages) {
+                double sigmoid = 1/(1 + Math.exp(-p.getProbability()));
+                if (sigmoid > randomGenerator.nextDouble()){
+                    p.setPosition(1);
+                    possiblePackages.add(p);
+                } else{
+                    p.setPosition(0);
+                }
+            }
+            Collections.sort(possiblePackages);
+            while(capacityReached){
+                Package pack = possiblePackages.get(0);
+                double weight = pack.getWeight();
+                double volume = pack.getVolume();
+                if((weightRemaining - weight) >= 0 && volumeRemaining - volume >= 0) {
+                    volumeRemaining -= volume;
+                    weightRemaining -= weight;
+                    possiblePackages.remove(0);
+                } else {
+                    capacityReached = false;
+                }
+            }
+            for(Package p : possiblePackages){
+                p.setPosition(0);
+            }
+        }
 	}
 	
 	public String toString(){
@@ -141,19 +160,5 @@ public class KnapsackPSO {
 			out += c;
 		}
 		return out;
-	}
-	
-	
-	public void print() {
-		double weight = winningContainer.getTotalWeight();
-		double volume = winningContainer.getTotalVolume();
-				
-		
-		String output = "Winning container specs:\n";
-		output += "Weight: "+ weight;
-		output += "\nVolume: " + volume;
-		output += "\nPerformance: " + winningContainer.evaluate();
-		output += "\nNumber of packages: " + winningContainer.getPackagesInContainer();
-		System.out.println(output);
 	}
 }

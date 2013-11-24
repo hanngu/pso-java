@@ -27,7 +27,15 @@ public class Container {
 		return this.packages;
 	}
 
-	public void compareLocalPerfomance() {
+    public void setBestLocalPerformance(double bestLocalPerformance) {
+        this.bestLocalPerformance = bestLocalPerformance;
+    }
+
+    public void setBestLocalPosition(ArrayList<Integer> bestLocalPosition) {
+        this.bestLocalPosition = bestLocalPosition;
+    }
+
+    public void compareLocalPerfomance() {
 		if (evaluate() > bestLocalPerformance){
 			bestLocalPerformance = evaluate();
 			bestLocalPosition = getPositionVector();
@@ -75,36 +83,32 @@ public class Container {
 	}
 
 	public ArrayList<Integer> getPositionVector() {
-		ArrayList<Integer> positonVector = new ArrayList<Integer>();
+		ArrayList<Integer> positionVector = new ArrayList<Integer>();
 		for(Package p : this.packages){
-			positonVector.add(p.getPosition());
+			positionVector.add(p.getPosition());
 		}
-		return positonVector;
+		return positionVector;
 	}
 
-	public void updatePositon(ArrayList<Integer> bestGlobalPosition,
-			double globalAttraction, boolean addSupportForInertiaWeight) {
+	public void updatePosition(ArrayList<Integer> bestGlobalPosition,
+                               double globalAttraction, boolean inertiaWeightEnabled) {
 		double r1 = random.nextDouble();
 		double r2 = random.nextDouble();
 		double inertia = 0;
-		
-		if(addSupportForInertiaWeight){
-			if((this.inertiaWeight*0.7) > 0.4){
-				this.inertiaWeight *= 0.7;
-			} else{
-				inertia = 0.4;
-			}
-		} else {
-			inertia = 1.0;
+
+		if(inertiaWeight * 0.991 > 0.4 && inertiaWeightEnabled){
+			inertiaWeight *= 0.991;
+		} else if (inertiaWeight * 0.991 < 0.4 && inertiaWeightEnabled){
+			inertiaWeight = 0.4;
 		}
 		for (int i = 0; i < this.packages.size(); i++) {
 			Package currentPackage = this.packages.get(i);
-			int currentPositon = packages.get(i).getPosition();
+			int currentPosition = packages.get(i).getPosition();
 			
-			double particleSelfMemory = (bestLocalPosition.get(i) - currentPositon) * r1 * this.localAttraction;
-			double globalInfluence = (bestGlobalPosition.get(i) - currentPositon) * r2 * globalAttraction;
+			double particleSelfMemory = (bestLocalPosition.get(i) - currentPosition) * r1 * this.localAttraction;
+			double globalInfluence = (bestGlobalPosition.get(i) - currentPosition) * r2 * globalAttraction;
 			inertia *= this.packages.get(i).getProbability(); 
-			currentPackage.setProbability(particleSelfMemory+globalInfluence+inertia);
+			currentPackage.setProbability(particleSelfMemory+globalInfluence+inertiaWeight);
 			
 			//Clamping
 			if(currentPackage.getProbability() > 4.25){
@@ -113,9 +117,7 @@ public class Container {
 			if(currentPackage.getProbability() < -4.25){
 				currentPackage.setProbability(-4.25);
 			}
-			
 		}
-		
 	}
 	
 	public String toString(){
