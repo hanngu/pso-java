@@ -15,6 +15,33 @@ public class Container {
 		this.packages = packages;
 	}
 
+    public Container(Container copy) {
+        ArrayList<Package> packs = new ArrayList<Package>();
+        for (Package p : copy.getPackages()) {
+            packs.add(new Package(p));
+        }
+        this.packages = packs;
+    }
+    public double getContainerVolume() {
+        double volume = 0;
+        for (Package p : this.packages) {
+            if (p.getPosition() == 1) {
+                volume += p.getVolume();
+            }
+        }
+        return volume;
+    }
+
+    public double getContainerWeight() {
+        double weight = 0;
+        for(Package p : this.packages) {
+            if (p.getPosition() == 1) {
+                weight += p.getWeight();
+            }
+        }
+        return weight;
+    }
+
     public double getBestLocalPerformance() {
         return bestLocalPerformance;
     }

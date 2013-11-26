@@ -18,6 +18,7 @@ public class KnapsackPSO {
 	private boolean inertiaWeightEnabled;
 	private Random randomGenerator;
 	private ArrayList<HashMap<String, Double>> chartDataContainer = new ArrayList<HashMap<String, Double>>();
+    private Container solution;
 	
 	public KnapsackPSO(boolean inertiaWeightEnabled){
 		this.inertiaWeightEnabled = inertiaWeightEnabled;
@@ -44,6 +45,7 @@ public class KnapsackPSO {
 				if(evaluation > bestGlobalPerformance){
 					bestGlobalPerformance = container.evaluate();
 					bestGlobalPosition = new ArrayList<Integer>(container.getPositionVector());
+                    solution = new Container(container);
 				}
 
 			}
@@ -62,7 +64,9 @@ public class KnapsackPSO {
 			chartDataContainer.add(bestGlobalPerformanceDataPoint);
         }
         System.out.println();
-        System.out.println("Solution found with performance " + bestGlobalPerformance);
+        System.out.println("Container weight: " + solution.getContainerWeight());
+        System.out.println("Container volume: " + solution.getContainerVolume());
+        System.out.println("Container fitness: " + bestGlobalPerformance);
 	    return chartDataContainer;
     }
 
